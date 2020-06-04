@@ -106,6 +106,13 @@ tightEnds['Usage Per Game'] = tightEnds['Receptions']
 tightEnds['Fantasy Points Per Game'] = fppgTE(tightEnds)
 tightEnds['Touchdowns Per Game'] = tightEnds['ReceivingTD']/tightEnds['G']
 
+# Basic Data Filtering
+wideReceivers = wideReceivers[wideReceivers['Receptions'] > 20]
+runningBacks = runningBacks[runningBacks['RushingAttempt'] > 20]
+tightEnds = tightEnds[tightEnds['Receptions'] > 10]
+quarterBacks = quarterBacks[quarterBacks['PassingAttempt'] > 20]
+
+# RUNNING BACKS
 # DATA PLOTTING Fantasy Points Per Game vs Usage
 # Line of Best Fit
 mRBFPPG, bRBFPPG = numpy.polyfit(runningBacks['Usage Per Game'], runningBacks['Fantasy Points Per Game'], 1)
@@ -129,6 +136,19 @@ figTDPG.add_trace(go.Scatter(x=runningBacks['Usage Per Game'], y=mRBTDPG*running
                              mode='lines', name='Regression Line'))
 figTDPG.layout.update(title="Running Back Usage vs Touchdowns Per Game", xaxis_title="Usage Per Game",
                     yaxis_title="Touchdowns Per Game", showlegend=False)
+
+# WIDE RECEIVERS
+# DATA Plotting Fantasy Points and Usage Rates
+# Line of Best Fit
+mWRFPPG, bWRFPPG = numpy.polyfit(wideReceivers['Usage Per Game'], wideReceivers['Fantasy Points Per Game'], 1)
+# Creating and Formatting Plot
+figWRFPPG = go.Figure()
+figWRFPPG.add_trace(go.Scatter(x=wideReceivers['Usage Per Game'], y=wideReceivers['Fantasy Points Per Game'],
+                                mode='markers', name='Wide Receiver Data Points', text=wideReceivers['Player']))
+figWRFPPG.add_trace(go.Scatter(x=wideReceivers['Usage Per Game'], y=mWRFPPG*wideReceivers['Usage Per Game'] + bWRFPPG,
+                               mode='lines', name='Regression Line'))
+figWRFPPG.layout.update(title="Wide Receiver Usage vs Fantasy Points", xaxis_title="Usage Per Game",
+                    yaxis_title="Fantasy Points Per Game", showlegend=False)
 
 # Heat Map for Stacking PLayers (two players on same team)
 # Eliminating if they played on multiple teams in a year for simplicity
@@ -187,4 +207,5 @@ figHeatMat = px.imshow(correlationMatrix, color_continuous_scale=px.colors.seque
 # Showing all plots
 figRBFPPG.show()
 figTDPG.show()
+figWRFPPG.show()
 figHeatMat.show()
